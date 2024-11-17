@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String  @id @default(uuid())
+  full_name     String?
+  email         String? @unique
+  phone         String  @unique
+  password_hash String?
+  role          Role    @default(CLIENT)
+  image_url     String?
+
+  password_resets   PasswordResetToken[]
+}
+
+enum Role {
+  ADMIN
+  SELLER
+  CLIENT
+}
+
+model Image {
+  id  String @id @default(uuid())
+  url String
+}
+
+model PasswordResetToken {
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id    String
+}
